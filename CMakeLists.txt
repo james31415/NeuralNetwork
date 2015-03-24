@@ -13,11 +13,10 @@ endif()
 if (NOT CONFIGURED_ONCE)
     set(CMAKE_CXX_FLAGS "${warnings} -std=c++11"
         CACHE STRING "Flags used by the compiler during all build types." FORCE)
-    set(BOOST_ROOT "../boost_1_57_0"
-        CACHE PATH "Location of the Boost directory")
 endif()
 
-include_directories(SYSTEM ${BOOST_ROOT})
+find_package(Boost 1.57.0 REQUIRED)
+include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
 add_executable(main main.cpp NeuralNetwork.cpp)
 
