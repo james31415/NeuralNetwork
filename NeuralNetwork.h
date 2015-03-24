@@ -2,22 +2,29 @@
 #define NEURALNETWORK_H
 
 #include <vector>
+#include "boost/multi_array.hpp"
+#include "IActivationFunction.h"
 
-class ILayer;
-
-class NeuralNetwork
-{
+class NeuralNetwork {
     public:
-        NeuralNetwork(unsigned int nNumberOfLayers,
-                unsigned int nNumberOfInputNeurons,
-                unsigned int nNumberOfInnerNeurons,
-                unsinged int nNumberOfOutputNeurons);
-        std::vector<double> Activate(std::vector<double> input);
+        NeuralNetwork(unsigned int nNumberOfInputNeurons,
+                unsigned int nNumberOfHiddenNeurons,
+                unsigned int nNumberOfOutputNeurons,
+                IActivationFunction& funcActivation);
 
-        virtual ~NeuralNetwork();
+        void FeedForward(const std::vector<double>& Input);
+
     private:
-        std::vector<ILayer*> m_Layers;
-};
+        void InitializeWeights();
 
+        std::vector<double> m_vInputNeurons;
+        std::vector<double> m_vHiddenNeurons;
+        std::vector<double> m_vOutputNeurons;
+
+        boost::multi_array<double, 2> m_vvInputHiddenWeights;
+        boost::multi_array<double, 2> m_vvHiddenOutputWeights;
+
+        IActivationFunction& m_funcActivation;
+};
 #endif /* NEURALNETWORK_H */
 

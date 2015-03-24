@@ -1,25 +1,24 @@
-#include "ILayer.h"
-#include "InputLayer.h"
-#include "InnerLayer.h"
-#include "OutputLayer.h"
+#include <algorithm>
+#include <iostream>
 #include "NeuralNetwork.h"
 
-NeuralNetwork::NeuralNetwork(unsigned int nNumberOfLayers,
-                unsigned int nNumberOfInputNeurons,
-                unsigned int nNumberOfInnerNeurons,
-                unsinged int nNumberOfOutputNeurons) {
-    m_Layers.reserve(nNumberOfLayers + 2);
-    m_Layers.push_back(new InputLayer(nNumberOfInputNeurons));
-    
-    for (unsigned int n = 0; n < nNumberOfLayers; ++n) {
-        m_Layers.push_back(new InnerLayer(nNumberOfInnerNeurons));
-    }
+NeuralNetwork::NeuralNetwork(unsigned int nNumberOfInputNeurons,
+        unsigned int nNumberOfHiddenNeurons,
+        unsigned int nNumberOfOutputNeurons,
+        IActivationFunction& funcActivation)
+    : m_vInputNeurons(nNumberOfInputNeurons)
+    , m_vHiddenNeurons(nNumberOfHiddenNeurons)
+    , m_vOutputNeurons(nNumberOfOutputNeurons)
+    , m_vvInputHiddenWeights(boost::extents[nNumberOfInputNeurons][nNumberOfHiddenNeurons])
+    , m_vvHiddenOutputWeights(boost::extents[nNumberOfHiddenNeurons][nNumberOfOutputNeurons])
+    , m_funcActivation(funcActivation)
+{}
 
-    m_Layers.push_back(new OutputLayer(nNumberOfOutputNeurons));
+void NeuralNetwork::InitializeWeights() {}
+void NeuralNetwork::FeedForward(const std::vector<double>& input) {
+    auto& fA = m_funcActivation;
+    std::for_each(input.begin(), input.end(), [&fA](double d) {
+            std::cout << fA.Activate(d) << " "
+            << fA.Derivative(d) << std::endl; });
 }
 
-NeuralNetwork::~NeuralNetwork() {
-    for (auto&& layer : m_Layers) {
-        delete layer;
-    }
-}
