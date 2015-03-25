@@ -13,18 +13,23 @@ class NeuralNetwork {
                 IActivationFunction& funcActivation);
 
         void FeedForward(const std::vector<double>& Input);
+        std::vector<double>& GetOutputs() { return m_vOutputNeurons; }
 
     private:
-        void InitializeWeights();
+        typedef boost::multi_array<double, 2> ArrayType;
+        typedef typename ArrayType::reference RowTypeReference;
 
         std::vector<double> m_vInputNeurons;
         std::vector<double> m_vHiddenNeurons;
         std::vector<double> m_vOutputNeurons;
 
-        boost::multi_array<double, 2> m_vvInputHiddenWeights;
-        boost::multi_array<double, 2> m_vvHiddenOutputWeights;
+        ArrayType m_vvInputHiddenWeights;
+        ArrayType m_vvHiddenOutputWeights;
 
         IActivationFunction& m_funcActivation;
+
+        void InitializeWeights();
+        void InitializeArray(ArrayType& vvArray, double dValue);
 };
 #endif /* NEURALNETWORK_H */
 

@@ -1,10 +1,14 @@
-#include "SigmoidActivationFunction.h"
+#include <iostream>
+#include "LinearActivationFunction.h"
 #include "NeuralNetwork.h"
 
 int main() {
-    SigmoidActivationFunction func;
-    NeuralNetwork nn(8, 8, 8, func);
-    nn.FeedForward(std::vector<double>({0, 1, 2, 3}));
+    LinearActivationFunction func;
+    NeuralNetwork nn(2, 2, 2, func);
+    nn.FeedForward(std::vector<double>({9, 3}));
+
+    for (auto& v : nn.GetOutputs())
+        std::cout << v << std::endl;
 
     return 0;
 }
