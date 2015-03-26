@@ -24,7 +24,7 @@ void NeuralNetwork::InitializeWeights() {
     InitializeArray(m_vvHiddenOutputWeights, 1.0);
 }
 
-void NeuralNetwork::InitializeArray(ArrayType& vvArray, double dValue) {
+void InitializeArray(ArrayType& vvArray, double dValue) {
     std::for_each(vvArray.begin(), vvArray.end(), [dValue](RowTypeReference r) {
             std::fill(r.begin(), r.end(), dValue);
     });

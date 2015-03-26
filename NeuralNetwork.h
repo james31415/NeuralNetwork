@@ -5,6 +5,9 @@
 #include "boost/multi_array.hpp"
 #include "IActivationFunction.h"
 
+typedef boost::multi_array<double, 2> ArrayType;
+typedef typename ArrayType::reference RowTypeReference;
+
 class NeuralNetwork {
     public:
         NeuralNetwork(unsigned int nNumberOfInputNeurons,
@@ -16,8 +19,7 @@ class NeuralNetwork {
         std::vector<double>& GetOutputs() { return m_vOutputNeurons; }
 
     private:
-        typedef boost::multi_array<double, 2> ArrayType;
-        typedef typename ArrayType::reference RowTypeReference;
+        friend class NeuralNetworkTrainer;
 
         std::vector<double> m_vInputNeurons;
         std::vector<double> m_vHiddenNeurons;
@@ -29,7 +31,9 @@ class NeuralNetwork {
         IActivationFunction& m_funcActivation;
 
         void InitializeWeights();
-        void InitializeArray(ArrayType& vvArray, double dValue);
 };
+
+void InitializeArray(ArrayType& vvArray, double dValue);
+
 #endif /* NEURALNETWORK_H */
 

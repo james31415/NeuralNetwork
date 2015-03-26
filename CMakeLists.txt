@@ -18,7 +18,7 @@ endif()
 find_package(Boost 1.57.0 REQUIRED)
 include_directories(SYSTEM ${Boost_INCLUDE_DIR})
 
-add_executable(main main.cpp NeuralNetwork.cpp)
+add_executable(main main.cpp NeuralNetwork.cpp NeuralNetworkTrainer.cpp)
 set_property(TARGET main PROPERTY CXX_STANDARD 11)
 set_property(TARGET main PROPERTY CXX_STANDARD_REQUIRED ON)
 
