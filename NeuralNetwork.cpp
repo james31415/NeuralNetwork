@@ -34,16 +34,18 @@ void NeuralNetwork::FeedForward(const std::vector<double>& input) {
     typedef ArrayType::index_range range;
     std::copy(input.begin(), input.end(), m_vInputNeurons.begin());
 
-    for (unsigned int j = 0; j < m_vHiddenNeurons.size() - 1; ++j) {
+    unsigned int j = 0;
+    std::generate_n(m_vHiddenNeurons.begin(), m_vHiddenNeurons.size() - 1, [&]() {
         ArrayType::array_view<1>::type myview = m_vvInputHiddenWeights[boost::indices[range(0, m_vInputNeurons.size())][j]];
-        m_vHiddenNeurons[j] = std::inner_product(m_vInputNeurons.begin(), m_vInputNeurons.end(), myview.begin(), 0.0);
-        m_vHiddenNeurons[j] = m_funcActivation.Activate(m_vHiddenNeurons[j]);
-    }
+        ++j;
+        return m_funcActivation.Activate(std::inner_product(m_vInputNeurons.begin(), m_vInputNeurons.end(), myview.begin(), 0.0));
+    });
 
-    for (unsigned int k = 0; k < m_vOutputNeurons.size(); ++k) {
+    unsigned int k = 0;
+    std::generate(m_vOutputNeurons.begin(), m_vOutputNeurons.end(), [&]() {
         ArrayType::array_view<1>::type myview = m_vvHiddenOutputWeights[boost::indices[range(0, m_vvHiddenOutputWeights.size())][k]];
-        m_vOutputNeurons[k] = std::inner_product(m_vHiddenNeurons.begin(), m_vHiddenNeurons.end(), myview.begin(), 0.0);
-        m_vOutputNeurons[k] = m_funcActivation.Activate(m_vOutputNeurons[k]);
-    }
+        ++k;
+        return m_funcActivation.Activate(std::inner_product(m_vHiddenNeurons.begin(), m_vHiddenNeurons.end(), myview.begin(), 0.0));
+    });
 }
 

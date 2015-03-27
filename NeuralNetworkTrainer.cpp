@@ -27,18 +27,20 @@ void NeuralNetworkTrainer::TrainOne(const TrainingSet& tSet) {
 }
 
 void NeuralNetworkTrainer::BackPropagate(const std::vector<double>& vDesiredOutput) {
-    for (unsigned int k = 0; k < m_nn->m_vOutputNeurons.size(); ++k) {
-        m_vOutputErrorGradients[k] = GetOutputErrorGradient(vDesiredOutput[k], m_nn->m_vOutputNeurons[k]);
+    using namespace std::placeholders;
+
+    std::transform(vDesiredOutput.begin(), vDesiredOutput.end(), m_nn->m_vOutputNeurons.begin(),
+            m_vOutputErrorGradients.begin(), [&](double a, double b) { return GetOutputErrorGradient(a, b); });
 
         for (unsigned int j = 0; j < m_nn->m_vHiddenNeurons.size(); ++j) {
-            m_vvHiddenOutputDeltas[j][k] += m_dLearningRate * m_nn->m_vHiddenNeurons[j] * m_vOutputErrorGradients[k];
+            for (unsigned int k = 0; k < m_nn->m_vOutputNeurons.size(); ++k) {
+                m_vvHiddenOutputDeltas[j][k] += m_dLearningRate * m_nn->m_vHiddenNeurons[j] * m_vOutputErrorGradients[k];
         }
     }
 
-    for (unsigned int j = 0; j < m_nn->m_vHiddenNeurons.size() - 1; ++j) {
-        m_vHiddenErrorGradients[j] = GetHiddenErrorGradient(j);
-
-        for (unsigned int i = 0; i < m_nn->m_vInputNeurons.size(); ++i) {
+    for (unsigned int i = 0; i < m_nn->m_vInputNeurons.size(); ++i) {
+        for (unsigned int j = 0; j < m_nn->m_vHiddenNeurons.size() - 1; ++j) {
+            m_vHiddenErrorGradients[j] = GetHiddenErrorGradient(j);
             m_vvInputHiddenDeltas[i][j] += m_dLearningRate * m_nn->m_vInputNeurons[i] * m_vHiddenErrorGradients[j];
         }
     }
@@ -56,10 +58,8 @@ double NeuralNetworkTrainer::GetOutputErrorGradient(double dDesired, double dObs
 }
 
 double NeuralNetworkTrainer::GetHiddenErrorGradient(unsigned int j) {
-    double dSum = 0.0;
-    for (unsigned int k = 0; k < m_nn->m_vOutputNeurons.size(); ++k) {
-        dSum += m_nn->m_vvHiddenOutputWeights[j][k] * m_vOutputErrorGradients[k];
-    }
+    double dSum = std::inner_product(m_nn->m_vvHiddenOutputWeights[j].begin() ,m_nn->m_vvHiddenOutputWeights[j].end(),
+            m_vOutputErrorGradients.begin(), 0.0);
 
     return m_nn->m_funcActivation.Derivative(m_nn->m_vHiddenNeurons[j]) * dSum;
 }
